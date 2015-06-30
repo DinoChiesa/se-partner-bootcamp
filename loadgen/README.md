@@ -29,9 +29,10 @@ a tool to invoke single APIs, like curl, Postman, or Advanced REST Client
 
 Estimated Time: 15 mins
 
-#. Deploy the oauth proxy.   You may need to import the oauth proxy; if it is already imported into your organization, verify it is deployed to the test environment, and if not, actually deploy it to test.   The oauth proxy will dispense tokens for other APIs in use in your organization.
+1. Deploy the oauth proxy.   You may need to import the oauth proxy; if it is already imported into your organization, verify it is deployed to the test environment, and if not, actually deploy it to test.   The oauth proxy will dispense tokens for other APIs in use in your organization.
 
-Open up a browser tab and log in to http://edge.apigee.com
-From the Organization drop-down in the top-right corner, select the organization assigned to you
-From the Environment drop-down, select "test"
-From the main menu, select APIs ? API Proxies
+  a. Open up a browser tab and log in to http://edge.apigee.com
+  b. From the Organization drop-down in the top-right corner, select the organization assigned to you
+  c. From the Environment drop-down, select "test"
+  d. From the main menu, select APIs ? API Proxies
+
