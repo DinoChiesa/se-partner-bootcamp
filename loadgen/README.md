@@ -154,9 +154,9 @@ Estimated Total Time for all Phases: 45 minutes
 
 2. Save the apiproxy. 
 
-3. Deploy the runload API proxy to the "test" environment by clicking the Deployment dropdown and selecting "test". When runload deploys, it will read this configuration, and proceed with the logic as described above - periodically invoking the API call described in the model.json file to send a request for a token using client_credentials flow. IT will then sleep, and then send out another call. 
+3. Deploy the runload API proxy to the "test" environment by clicking the Deployment dropdown and selecting "test". When runload deploys, it will read this configuration, and proceed with the logic as described above - periodically invoking the API call described in the model.json file to send a request for a token using client_credentials flow. It will then sleep, and then send out another call. 
 
-4. You should view these calls in Edge Trace.  In the Edge UI, go to the list of API Proxies, select the oauth proxy, and then select the Trace tab. **NOTE**: The oauth proxy, not the runload proxy. Start tracing this proxy. After a delay of up to 60 seconds, you should see inbound requests arriving from loadgen / runload.js. If you do not, seek assistance from the lesson proctor.  These requests should show a 200 OK status.  If they are not all 200 OK, seek assistance.  If you view the weather-quota in the trace tab, you will see no traffic. Here's why: at this point the runload proxy is configured to send out transactions only to the oauth endpoint. We'll modify the configuration of the runload proxy to contact the weather-quota proxy in a later phase of this lesson. 
+4. You should view these calls in Edge Trace.  In the Edge UI, go to the list of API Proxies, select the oauth proxy, and then select the Trace tab. **NOTE**: The oauth proxy, not the runload proxy. Start tracing this proxy. After a delay of up to 60 seconds, you should see inbound requests arriving from loadgen / runload.js. If you do not, seek assistance from the lesson proctor. These requests should show a 200 OK status.  If they are not all 200 OK, seek assistance. If you view the weather-quota in the trace tab, you will see no traffic. Here's why: at this point the runload proxy is configured to send out transactions only to the oauth endpoint. We'll modify the configuration of the runload proxy to contact the weather-quota proxy in a later phase of this lesson. If you view the runload-1 proxy in the trace tab, you will see no traffic. This is because there are no *inbound* transactions to runload-1. The runload-1 proxy is sending outbound transactions, but those are not visible in the Trace tab. 
 
 5. Runload is looking for patterns in the outbound request payload like {vname}, and then replacing those patterns with the values of the "context variable" with the name 'vname'.  In this case, the variables are {client_id} and {client_secret}.  At runtime, runload replaces these with the values you provided in the initialContext field.  
 
@@ -204,9 +204,9 @@ Estimated Total Time for all Phases: 45 minutes
 
 1. Back in the API Proxy Editor for runload-1, select the **model-3.json** file.
 
-2. from **model-3.json** copy-paste the "initialContext" into the appropriate place in model.json, replacing the original "initialContext". Replace client_id_here and client_secret_here with the values you saved earlier.   
+2. from **model-3.json** copy-paste the "initialContext" into the appropriate place in **model.json**, replacing the original "initialContext". Replace client_id_here and client_secret_here with the values you saved earlier.   
 
-3. from **model-3.json**, also copy-paste the "sequences" section, replacing the "sequences" section in model.json 
+3. from **model-3.json**, also copy-paste the "sequences" section, replacing the "sequences" section in **model.json** 
 
 4. For the values "another_client_id_here" and "another_client_secret_here" , you have two options: Leave them as is, or, create a new developer app, and place the new values there. 
 
