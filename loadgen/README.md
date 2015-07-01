@@ -29,10 +29,35 @@ a tool to invoke single APIs, like curl, Postman, or Advanced REST Client
 
 Estimated Time: 15 mins
 
-1. Deploy the oauth proxy.   You may need to import the oauth proxy; if it is already imported into your organization, verify it is deployed to the test environment, and if not, actually deploy it to test.   The oauth proxy will dispense tokens for other APIs in use in your organization.
+1. Deploy the oauth proxy. Import the oauth proxy if necessary. After it is imported, verify the oauth proxy is deployed to the test environment. If it is not, deploy the oauth proxy to test. The oauth proxy will dispense tokens for other APIs in use in your organization.
 
-  a. Open up a browser tab and log in to http://edge.apigee.com
-  b. From the Organization drop-down in the top-right corner, select the organization assigned to you
-  c. From the Environment drop-down, select "test"
-  d. From the main menu, select APIs ? API Proxies
+  a. Open up a browser tab and log in to http://edge.apigee.com  
+  b. From the Organization drop-down in the top-right corner, select the organization assigned to you  
+  c. From the Environment drop-down, select "test"  
+  d. From the main menu, select APIs   
+  e. you should see a list of API Proxies. Click the "+ API Proxy" button
+
+![Plus API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/plus-API-Proxy.png)
+
+  f. In the New API Proxy panel, select "API Bundle". 
+
+![New API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/New-API-Proxy.png)
+
+  g. Select "Choose file" and upload the oauth.zip bundle . The name of the proxy will be pre-populated with the word "oauth".  That's good.  Click "Build".
+
+  h. click "Close" when the build completes. 
+
+  i. In the resulting list of API Proxies, click the "oauth" proxy. 
+
+  j. Click the Deployment drop-down, and select "test".  This will deploy the oauth proxy to the test environment.  
+
+![New API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/deployment-dropdown.png)
+
+
+2. Deploy the weather-quota apiproxy the same way.  
+
+3. Deploy the runload-1 apiproxy the same way. EXCEPT - do not deploy the runload-1 proxy.  We'll deploy it in a few moments. 
+
+
+
 
