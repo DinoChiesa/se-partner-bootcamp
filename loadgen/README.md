@@ -121,7 +121,7 @@ Estimated Total Time for all Phases: 45 minutes
   "loglevel" : 3,
   "defaultProperties": {
     "scheme": "https",
-    "host": "NAME-sandbox-test.apigee.net",
+    "host": "ORGNAME-test.apigee.net",
     "headers" : {
       "Accept" : "application/json"
     }
@@ -155,9 +155,9 @@ Estimated Total Time for all Phases: 45 minutes
 
 2. Save the apiproxy. 
 
-3. Deploy the API proxy to the "test" environment by clicking the Deployment dropdown and selecting "test". When runload deploys, it will read this configuration, and proceed with the logic as described above - periodically invoking the API call described in the model.json file to send a request for a token using client_credentials flow. IT will then sleep, and then send out another call. 
+3. Deploy the runload API proxy to the "test" environment by clicking the Deployment dropdown and selecting "test". When runload deploys, it will read this configuration, and proceed with the logic as described above - periodically invoking the API call described in the model.json file to send a request for a token using client_credentials flow. IT will then sleep, and then send out another call. 
 
-4. You should view these calls in Edge Trace.  In the Edge UI, go to the list of API Proxies, select the oauth proxy, and then select the Trace tab.  Start tracing this proxy. After a short delay you should see inbound requests arriving from loadgen / runload.js. If you do not, seek assistance from the lesson proctor. 
+4. You should view these calls in Edge Trace.  In the Edge UI, go to the list of API Proxies, select the oauth proxy, and then select the Trace tab. **NOTE**: The oauth proxy, not the runload proxy. Start tracing this proxy. After a delay of up to 60 seconds, you should see inbound requests arriving from loadgen / runload.js. If you do not, seek assistance from the lesson proctor.  These requests should show a 200 OK status.  If they are not all 200 OK, seek assistance.  If you view the weather-quota in the trace tab, you will see no traffic. Here's why: at this point the runload proxy is configured to send out transactions only to the oauth endpoint. We'll modify the configuration of the runload proxy to contact the weather-quota proxy in a later phase of this lesson. 
 
 5. Runload is looking for patterns in the outbound request payload like {vname}, and then replacing those patterns with the values of the "context variable" with the name 'vname'.  In this case, the variables are {client_id} and {client_secret}.  At runtime, runload replaces these with the values you provided in the initialContext field.  
 
@@ -166,35 +166,38 @@ Estimated Total Time for all Phases: 45 minutes
 
 1. Back in the API Proxy Editor for runload-1, select the "model-1.json" file.  (**Note**: model-1.json, not model.json)  
 
-2. you will see an additional field like so: 
-
+2. You will see an additional field like so: 
+```
     "invocationsPerHour" : [
          88,  74,  80,  64,  80,  78,  80, 108,
         100, 124,  81, 188, 120, 140, 101,  86,
         128, 161, 192, 141, 167, 145, 146, 103
     ],
+```
 
-3. copy this segment, and paste it into model.json, just after "initialContext", and just before "sequences"
+3. Copy this segment, and paste it into model.json, just after "initialContext", and just before "sequences"
 
-4. Save the apiproxy.  It will be automatically re-deployed. 
+4. Save the apiproxy. Edge will automatically re-deploy it. 
 
-5. This configuration tells runload to vary the rate of calls made per hour, according to the numbers you provided. The first number provides the rate of calls for the hour between midnight and 1am.  The second for 1am-2am, and so on. In this way the number of calls varies over the course of a day.  runload also applies a Gaussian function, so that the number of calls it actually makes varies randomly around that specified number. This meakes the transaction volume more random-looking. 
+5. This configuration tells runload to vary the rate of calls made per hour, according to the numbers you provided. The first number provides the rate of calls for the hour between midnight and 1am.  The second for 1am-2am, and so on. In this way the number of calls varies over the course of a day.  runload also applies a [Gaussian function](https://en.wikipedia.org/wiki/Gaussian_function), so that the number of calls it actually makes varies randomly around that specified number. This meakes the transaction volume more random-looking. 
 
-6. To verify that your change has worked, return to the Trace tab for the oauth proxy.  Start a trace if necessary - it may be still running. You should still see transactions flowing. It will be difficult to tell, but trust me, they're arriving at a different rate now. 
+6. To verify that your change has worked, return to the Trace tab for the oauth proxy.  A Trace session may be still running; if not, start a new one. You should again see transactions flowing. Once again you may have to wait 30 seconds or so. It will be difficult to tell, but trust me, they're arriving at a different rate now. 
 
 
 ### Phase 4: addition of variation by day of week. 
 
 1. Back in the API Proxy Editor for runload-1, select the "model-2.json" file.
 
-2. you should see a segment like this: 
+2. You should now see a segment like this:  
+```
     "variationByDayOfWeek" : [
       1.2, 1.42, 0.942, 0.82, 1.184, 1.1, 0.64
     ],
+```
 
 3. copy this and paste it into model.json, right after the close-square bracket following "invocationsPerHour", amd just before "sequences". 
 
-4. Save.  Redeploy is automatic. 
+4. Save. Redeploy is automatic. 
 
 5. Again, verify with the Trace tab. 
 
@@ -209,22 +212,22 @@ Estimated Total Time for all Phases: 45 minutes
 
 4. For the values "another_client_id_here" and "another_client_secret_here" , you have two options: Leave them as is, or, create a new developer app, and place the new values there. 
 
-5. In either case, with this configuration, you are instructing runload to select the first pair of values at a rate of 20/(20+10) = 66% of the time, and the second pair of values at 10/(20+10) = 33% of the time. This uses a "Weighted random selection" function that is part of runload. (Examine the sequences section closely to see how this works).   Obviously if you have left the second client_id as "another_client_id_here", the oauth proxy will not grant a token for such a request.  That's ok though - the point is not to have all 200 status codes. The point of driving traffic is to show a mix of transactions, some of which are failures or errors. 
+5. In either case, with this configuration, you are instructing runload to select the first pair of values at a rate of 30/(30+10) = 75% of the time, and the second pair of values at 10/(30+10) = 25% of the time. This uses a "Weighted random selection" function that is part of runload. (Examine the sequences section closely to see how this works). If you have left the second client_id as "another_client_id_here", obviously the oauth proxy will not grant a token for such a request. The response will be a 401. That's ok though - the goal here is not to generate traffic that has only 200 status codes. The point of driving traffic is to show a mix of transactions, some of which are failures or errors. 
 
-6. You may wonder, Why have a context at all? Why use variable replacement in these outbound requests?  Here's why: You can tell runload to modify that context with data from responses, which can then be used in subsequent calls. For example, you can extract the returned access_token, and insert it into the context, and then use that token in subsequent calls. This is what the "extracts" configuration is doing in the model.json file. 
+6. You may wonder, Why does runload have a context at all? Why use variable replacement in these outbound requests? Here's why: In the configuration, you can tell runload to modify that context with data from responses, which can then be used in subsequent calls. For example, you can extract the returned access_token, and insert it into the context, and then use that token in subsequent calls. This is what the "extracts" configuration is doing in the model.json file. 
 
-7. Open the Trace tab for the oauth proxy, and you should see some variation among the client_id and client_secret used for requesting tokens. 
+7. Open the Trace tab for the oauth proxy, and you should see some variation among the client_id and client_secret used for requesting tokens. If you have the "fake" client_id, then you should see some 401s. 
 
 
 ### Phase 6. Using extracted values in sunsequent requests
 
 1. Back in the API Proxy Editor for runload-1, select the "model-4.json" file.
 
-2. grab the "cities" property for "initialContext". Paste it into the appropriate place in model.json 
+2. Copy the "cities" property for "initialContext". Paste it into the appropriate place in model.json 
 
-3. also grab the updated "sequences" section in model-4.json, and paste it into model.json, replacing the previous data. 
+3. Also copy the updated "sequences" section in model-4.json, and paste it into model.json, replacing the previous data. 
 
-4. Examine the "sequences" value - you will see an additional sequence, which uses the extracted access_token.  This request also uses context "import" logic - it invokes a function to randomly select a city value to use in the outbound request.  Finally the outbound request is made to weather-quota. Notice the "iterations" value on that weather-quota sequence - it is a Javascript expression that resolves to a numeric. In this case a random value from 3 to 7. This simply introduces one more factor of variation in the request rate of runload. 
+4. When deployed, this configuration for the runload tool will now send requests to the weather-quota proxy. Examine the "sequences" value - you will see an additional sequence, which uses the extracted access_token.  This request also uses context "import" logic - it invokes a function to randomly select a city value to use in the outbound request.  Finally the outbound request is made to weather-quota. Notice the "iterations" value on that weather-quota sequence - it is a Javascript expression that resolves to a numeric. In this case a random value from 3 to 7. This simply introduces one more factor of variation in the request rate of runload. 
 
 5. Now open on the Trace tab for the "weather-quota" proxy. You should see a varying number of requests arrive, using tokens. 
 
