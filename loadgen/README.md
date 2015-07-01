@@ -242,7 +242,5 @@ Some further notes:
 
 3. There is a complete readme for the runload tool, explaining its behavior and configuration, available [here](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/Runload-README.md).  There are many more possibilities that we haven't explored here.
 
-4. You can download the runload API Proxy and re-use it anywhere, for any purpose. We recommend running it for a week or more, to generate reasonable data and Analytis charts that are worth demonstrating. 
-
-
-
+4. You can download the runload API Proxy and re-use it anywhere, for any purpose. We recommend running it for a week or more, to generate reasonable data and Analytis charts that are worth demonstrating. For example: 
+![Plus API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/resulting-chart-20150630-221032.png)
