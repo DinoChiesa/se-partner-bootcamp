@@ -168,11 +168,11 @@ Estimated Total Time for all Phases: 45 minutes
 
 2. You will see an additional field like so: 
 
-      "invocationsPerHour" : [
-           88,  74,  80,  64,  80,  78,  80, 108,
-          100, 124,  81, 188, 120, 140, 101,  86,
-          128, 161, 192, 141, 167, 145, 146, 103
-      ],
+        "invocationsPerHour" : [
+             88,  74,  80,  64,  80,  78,  80, 108,
+            100, 124,  81, 188, 120, 140, 101,  86,
+            128, 161, 192, 141, 167, 145, 146, 103
+        ],
 
 
 3. Copy this segment, and paste it into model.json, just after "initialContext", and just before "sequences"
