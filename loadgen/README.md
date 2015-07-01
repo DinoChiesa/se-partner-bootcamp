@@ -22,9 +22,9 @@ Prerequisites
 --------------
 
 - API Services - Lesson 1 completed
-- The weather-quota API Proxy , which includes an oauth token verification policy.
-- The oauth API Proxy , which dispenses oauth tokens via the client_credentials flow. 
-- The runload-1 API Proxy , which contains the runLoad.js script which generates load
+- The [weather-quota API Proxy](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/weather-quota.zip) , which includes an oauth token verification policy.
+- The [oauth API Proxy](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/oauth.zip), which dispenses oauth tokens via the client_credentials flow. 
+- The [runload-1 API Proxy](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/runload-1.zip) , which contains the runLoad.js script which generates load
 a tool to invoke single APIs, like curl, Postman, or Advanced REST Client
 
 Total Estimated Time: 40 mins
@@ -240,7 +240,7 @@ Some further notes:
 
 2. runload need not send requests to an API hosted in Apigee Edge. It can be any HTTP target. We use it for Apigee Edge so that we can generate Analytics data. 
 
-3. There is a complete readme for the runload tool, explaining its behavior and configuration, available [here](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/Runload-README.md).  
+3. There is a complete readme for the runload tool, explaining its behavior and configuration, available [here](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/Runload-README.md).  There are many more possibilities that we haven't explored here.
 
 4. You can download the runload API Proxy and re-use it anywhere, for any purpose. We recommend running it for a week or more, to generate reasonable data and Analytis charts that are worth demonstrating. 
 
