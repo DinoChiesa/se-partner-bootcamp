@@ -27,7 +27,7 @@ Prerequisites
 - The [runload-1 API Proxy](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/runload-1.zip) , which contains the runLoad.js script which generates load
 a tool to invoke single APIs, like curl, Postman, or Advanced REST Client
 
-Total Estimated Time: 40 mins
+Estimated Total Time for all Phases: 45 minutes
 
 ### Phase 1: preparation
 
@@ -209,7 +209,7 @@ Total Estimated Time: 40 mins
 
 4. For the values "another_client_id_here" and "another_client_secret_here" , you have two options: Leave them as is, or, create a new developer app, and place the new values there. 
 
-5. In either case, with this configuration, you are instructing runload to select the first pair of values at a rate of 20/(20+10) = 66% of the time, and the second pair of values at 10/(20+10) = 33% of the time. Obviously if you leave the second client_id as "another_client_id_here", the oauth proxy will not grant a token for such a request.  That's ok though - the point is not to have all 200 status codes. The point of driving traffic is to show a mix of transactions, some of which are failures or errors. 
+5. In either case, with this configuration, you are instructing runload to select the first pair of values at a rate of 20/(20+10) = 66% of the time, and the second pair of values at 10/(20+10) = 33% of the time. This uses a "Weighted random selection" function that is part of runload. (Examine the sequences section closely to see how this works).   Obviously if you have left the second client_id as "another_client_id_here", the oauth proxy will not grant a token for such a request.  That's ok though - the point is not to have all 200 status codes. The point of driving traffic is to show a mix of transactions, some of which are failures or errors. 
 
 6. You may wonder, Why have a context at all? Why use variable replacement in these outbound requests?  Here's why: You can tell runload to modify that context with data from responses, which can then be used in subsequent calls. For example, you can extract the returned access_token, and insert it into the context, and then use that token in subsequent calls. This is what the "extracts" configuration is doing in the model.json file. 
 
@@ -240,7 +240,7 @@ Some further notes:
 
 2. runload need not send requests to an API hosted in Apigee Edge. It can be any HTTP target. We use it for Apigee Edge so that we can generate Analytics data. 
 
-3. There is a complete readme for the runload tool, explaining its behavior and configuration, available [here](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/Runload-README.md).  There are many more possibilities that we haven't explored here.
+3. There is a complete readme for the runload tool, explaining its behavior and configuration, available [here](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/Runload-README.md). There are many more possibilities that we haven't explored here. Also, we suggest that you play around with different values for the rates, and different values for the weights of input, to generate different load profiles. Experiment! 
 
-4. You can download the runload API Proxy and re-use it anywhere, for any purpose. We recommend running it for a week or more, to generate reasonable data and Analytis charts that are worth demonstrating. For example: 
+4. You can download the runload API Proxy and re-use it in any organization. We recommend running it for a week or more, to generate reasonable data and Analytis charts that are worth demonstrating. For example: 
 ![Plus API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/resulting-chart-20150630-221032.png)
