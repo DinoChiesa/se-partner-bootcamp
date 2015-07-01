@@ -1,7 +1,6 @@
 Analytics: Lesson 1 - Load Generator
 ========================================
 
-
 Overview
 --------
 
@@ -110,7 +109,7 @@ Estimated Total Time for all Phases: 45 minutes
   f. This continues indefinitely, or until you administratively "undeploy" the proxy, or send a "stop" command to the runload server. 
 
 
-11. Now, back in the Edge UI, viewing the runload-1 proxy, select the model.json file in that lower panel.  
+11. Now, back in the Edge UI, viewing the runload-1 proxy, select the **model.json** file in that lower panel.  
 ![runload-1 proxy](images/runload-1-proxy-modeljson.png)
 
 12. This shows some basic configuration for runload. The json looks like this: 
@@ -147,7 +146,7 @@ Estimated Total Time for all Phases: 45 minutes
 
 ### Phase 2: initial deployment of runload
 
-1. Modify the configuration in model.json in this way: 
+1. Modify the configuration in **model.json** in this way: 
 
   a. set the "host" property to point to the DNS name of your Apigee Edge organization   
   b. Replace CLIENT_ID_HERE with the client_id you saved earlier  
@@ -164,7 +163,7 @@ Estimated Total Time for all Phases: 45 minutes
 
 ### Phase 3: addition of hourly variation
 
-1. Back in the API Proxy Editor for runload-1, select the "model-1.json" file.  (**Note**: model-1.json, not model.json)  
+1. Back in the API Proxy Editor for runload-1, select the **model-1.json** file.  (**Note**: **model-1.json**, not model.json)  
 
 2. You will see an additional field like so: 
 
@@ -174,18 +173,18 @@ Estimated Total Time for all Phases: 45 minutes
           128, 161, 192, 141, 167, 195, 146, 133
         ],
 
-3. Copy this segment, and paste it into model.json, just after "initialContext", and just before "sequences"
+3. Copy this segment, and paste it into **model.json**, just after "initialContext", and just before "sequences"
 
 4. Save the apiproxy. Edge will automatically re-deploy it. 
 
 5. This configuration tells runload to vary the rate of calls made per hour, according to the numbers you provided. The first number provides the rate of calls for the hour between midnight and 1am.  The second for 1am-2am, and so on. In this way the number of calls varies over the course of a day.  runload also applies a [Gaussian function](https://en.wikipedia.org/wiki/Gaussian_function), so that the number of calls it actually makes varies randomly around that specified number. This meakes the transaction volume more random-looking. 
 
-6. To verify that your change has worked, return to the Trace tab for the oauth proxy.  A Trace session may be still running; if not, start a new one. You should again see transactions flowing. Once again you may have to wait 30 seconds or so. It will be difficult to tell, but trust me, they're arriving at a different rate now. 
+6. To verify that your change has worked, return to the Trace tab for the oauth proxy.  A Trace session may be still running; if not, start a new one. You should again see transactions flowing. Here you may have to wait 30 seconds or so. It will be difficult to tell, but trust me, the transactions are arriving at a different rate now. 
 
 
 ### Phase 4: addition of variation by day of week. 
 
-1. Back in the API Proxy Editor for runload-1, select the "model-2.json" file.
+1. Back in the API Proxy Editor for runload-1, select the **model-2.json** file.
 
 2. You should now see a segment like this:  
 
@@ -194,7 +193,7 @@ Estimated Total Time for all Phases: 45 minutes
         ],
 
 
-3. copy this and paste it into model.json, right after the close-square bracket following "invocationsPerHour", amd just before "sequences". 
+3. copy this and paste it into **model.json**, right after the close-square bracket following "invocationsPerHour", amd just before "sequences". 
 
 4. Save. Redeploy is automatic. 
 
@@ -203,11 +202,11 @@ Estimated Total Time for all Phases: 45 minutes
 
 ### Phase 5: randomly choosing values
 
-1. Back in the API Proxy Editor for runload-1, select the "model-3.json" file.
+1. Back in the API Proxy Editor for runload-1, select the **model-3.json** file.
 
-2. from model-3.json copy-paste the "initialContext" into the appropriate place in model.json, replacing the original "initialContext". Replace client_id_here and client_secret_here with the values you saved earlier.   
+2. from **model-3.json** copy-paste the "initialContext" into the appropriate place in model.json, replacing the original "initialContext". Replace client_id_here and client_secret_here with the values you saved earlier.   
 
-3. from model-3.json, also copy-paste the "sequences" section, replacing the "sequences" section in model.json 
+3. from **model-3.json**, also copy-paste the "sequences" section, replacing the "sequences" section in model.json 
 
 4. For the values "another_client_id_here" and "another_client_secret_here" , you have two options: Leave them as is, or, create a new developer app, and place the new values there. 
 
@@ -220,11 +219,11 @@ Estimated Total Time for all Phases: 45 minutes
 
 ### Phase 6. Using extracted values in sunsequent requests
 
-1. Back in the API Proxy Editor for runload-1, select the "model-4.json" file.
+1. Back in the API Proxy Editor for runload-1, select the **model-4.json** file.
 
-2. Copy the "cities" property for "initialContext". Paste it into the appropriate place in model.json 
+2. Copy the "cities" property for "initialContext". Paste it into the appropriate place in **model.json** 
 
-3. Also copy the updated "sequences" section in model-4.json, and paste it into model.json, replacing the previous data. 
+3. Also copy the updated "sequences" section in **model-4.json**, and paste it into model.json, replacing the previous data. 
 
 4. When deployed, this configuration for the runload tool will now send requests to the weather-quota proxy. Examine the "sequences" value - you will see an additional sequence, which uses the extracted access_token.  This request also uses context "import" logic - it invokes a function to randomly select a city value to use in the outbound request.  Finally the outbound request is made to weather-quota. Notice the "iterations" value on that weather-quota sequence - it is a Javascript expression that resolves to a numeric. In this case a random value from 3 to 7. This simply introduces one more factor of variation in the request rate of runload. 
 
