@@ -36,12 +36,10 @@ Estimated Time: 15 mins
   c. From the Environment drop-down, select "test"  
   d. From the main menu, select APIs   
   e. you should see a list of API Proxies. Click the "+ API Proxy" button
-
-![Plus API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/plus-API-Proxy.png)
+  ![Plus API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/plus-API-Proxy.png)
 
   f. In the New API Proxy panel, select "API Bundle". 
-
-![New API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/New-API-Proxy.png)
+  ![New API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/New-API-Proxy.png)
 
   g. Select "Choose file" and upload the oauth.zip bundle . The name of the proxy will be pre-populated with the word "oauth".  That's good.  Click "Build".
 
@@ -49,14 +47,70 @@ Estimated Time: 15 mins
 
   i. In the resulting list of API Proxies, click the "oauth" proxy. 
 
-  j. Click the Deployment drop-down, and select "test".  This will deploy the oauth proxy to the test environment.  
+  j. Click the Deployment drop-down, and select "test".  This will deploy the oauth proxy to the test environment.
+  ![New API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/deployment-dropdown.png)
 
-![New API Proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/deployment-dropdown.png)
+2. Import and Deploy the weather-quota apiproxy the same way.  
 
+3. Import the runload-1 apiproxy the same way. EXCEPT - do not deploy the runload-1 proxy.  We'll deploy it in a few moments. 
 
-2. Deploy the weather-quota apiproxy the same way.  
+4. Using the "new API Proxy editor", Examine the oauth proxy you have imported - you will see that it has exactly one resource: the AccessTokenClientCredential, which accepts a POST to /token. You will use this to request a bearer token which will be verified by the weather-quota proxy. 
+![oauth proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/oauth-proxy.png)
 
-3. Deploy the runload-1 apiproxy the same way. EXCEPT - do not deploy the runload-1 proxy.  We'll deploy it in a few moments. 
+5. ok, now examine the weather-quota proxy in the same way.  You will see that it has two flows - the first  queries the weather. This request is protected by an oauth token verification.  The second is a "default flow" which matches all other inbound requests.  This one just returns an "Unknown request" error (404)  to the caller. 
+
+![weather-quota proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/weather-quota-proxy.png)
+
+6. Now examine the runload-1 proxy, in the API Proxy editor (the new version).  Scroll the left-hand-side project navigator panel all the way down.  Select the runLoad.js file. This is the file that contains the generic logic for the load generator. You can browse the source of this nodejs module. It's about 36k of code. 
+
+![runload-1 proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/runload-1-proxy-runloadjs.png)
+
+7. You don't need to understand all the code, but you should be aware of the design of runload.js, which is as follows:
+
+  a. The runload nodejs server starts up and "listens" on a control interface.  
+  b. In the callback to the listen() function, it sets a timeout.   
+  c. in the function called by the setTimeout(), runload reads a configuration file, then sends out a batch of API calls as described in that configuration file.  
+  d. The function then sets another timeout, for some delay. About 60 seconds by default, but this can vary depending on the configuration.   
+  e. the timeout fires, and runload again sends out a batch of API calls.   
+  f. this continues indefinitely, or until you administratively "undeploy" the proxy, or send a "stop" command to the runload server. 
+  
+8. Now, back in the Edge UI, Select the model.json file in that lower panel.  
+
+![runload-1 proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/runload-1-proxy-modeljson.png)
+
+9. This shows some basic configuration for runload. The code looks like this: 
+
+```
+{
+  "id" : "job1",
+  "description": "drive some test APIs in the sandbox organization",
+  "loglevel" : 3,
+  "defaultProperties": {
+    "scheme": "https",
+    "host": "NAME-sandbox-test.apigee.net",
+    "headers" : {
+      "Accept" : "application/json"
+    }
+  },
+
+  "initialContext" : {
+    "client_id" : "CLIENT_ID_HERE",
+    "client_secret": "CLIENT_SECRET_HERE"
+  },
+
+  "sequences" : [{
+    "description" : "create-token",
+    "iterations" : 1,
+    "requests" : [ {
+      "method" : "post",
+      "url" : "/oauth/token",
+      "payload" : "grant_type=client_credentials&client_id={client_id}&client_secret={client_secret}"
+    }]
+  }]
+}
+
+```
+
 
 
 
