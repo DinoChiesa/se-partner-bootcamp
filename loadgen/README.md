@@ -22,9 +22,9 @@ Prerequisites
 --------------
 
 - API Services - Lesson 1 completed
-- The [weather-quota API Proxy](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/weather-quota.zip) , which includes an oauth token verification policy.
-- The [oauth API Proxy](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/oauth.zip), which dispenses oauth tokens via the client_credentials flow. 
-- The [runload-1 API Proxy](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/runload-1.zip) , which contains the runLoad.js script which generates load
+- The [weather-quota API Proxy](weather-quota.zip) , which includes an oauth token verification policy.
+- The [oauth API Proxy](oauth.zip), which dispenses oauth tokens via the client_credentials flow. 
+- The [runload-1 API Proxy](runload-1.zip) , which contains the runLoad.js script which generates load
 a tool to invoke single APIs, like curl, Postman, or Advanced REST Client
 
 Estimated Total Time for all Phases: 45 minutes
