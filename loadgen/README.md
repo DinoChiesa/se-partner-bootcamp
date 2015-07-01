@@ -27,7 +27,9 @@ Prerequisites
 - The runload-1 API Proxy , which contains the runLoad.js script which generates load
 a tool to invoke single APIs, like curl, Postman, or Advanced REST Client
 
-Estimated Time: 40 mins
+Total Estimated Time: 40 mins
+
+### Phase 1: preparation
 
 1. Deploy the oauth proxy. Import the oauth proxy if necessary. After it is imported, verify the oauth proxy is deployed to the test environment. If it is not, deploy the oauth proxy to test. The oauth proxy will dispense tokens for other APIs in use in your organization.
 
@@ -90,12 +92,12 @@ Estimated Time: 40 mins
 
 8. Get the client_id and client_secret for that app.  
 
-  a. In the resulting list, click the top item - it should be the wq-app-1 you just created.  
-  b. show the client_id and client_secret.  Copy these values to a text file.  
+  a. After saving the new developer app, you should see a list of developer apps. In the list, click the wq-app-1 you just created - it should be the top item in the list.   
+  b. click the "show" buttons to display the client_id and client_secret respectively.  Copy these values to a text file.  
 
 
 
-9. Now examine the runload-1 proxy, in the API Proxy editor (the new version).  Scroll the left-hand-side project navigator panel all the way down.  Select the runLoad.js file. This is the file that contains the generic logic for the load generator. You can browse the source of this nodejs module. It's about 36k of code. 
+9. Now examine the runload-1 proxy, in the API Proxy editor. Scroll the left-hand-side project navigator panel all the way down.  Select the runLoad.js file. This is the file that contains the generic logic for the load generator. You can browse the source of this nodejs module. It's about 36k of code. 
 ![runload-1 proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/runload-1-proxy-runloadjs.png)
 
 10. You don't need to understand all the code, but you should be aware of the design of runload.js, which is as follows:
@@ -106,8 +108,9 @@ Estimated Time: 40 mins
   d. After receiving responses from the api calls, the runload logic then sets another timeout, for some delay. About 60 seconds by default, but this time varies depending on the configuration.   
   e. After the delay period, the timeout fires, and Javascript invokes the specified function. The effect is that runload "wakes up" and sends out another batch of API calls.   
   f. This continues indefinitely, or until you administratively "undeploy" the proxy, or send a "stop" command to the runload server. 
-  
-11. Now, back in the Edge UI, Select the model.json file in that lower panel.  
+
+
+11. Now, back in the Edge UI, viewing the runload-1 proxy, select the model.json file in that lower panel.  
 ![runload-1 proxy](https://raw.githubusercontent.com/DinoChiesa/se-partner-bootcamp/master/loadgen/images/runload-1-proxy-modeljson.png)
 
 12. This shows some basic configuration for runload. The json looks like this: 
@@ -141,16 +144,105 @@ Estimated Time: 40 mins
 }
 ```
 
-13. Modify the configuration in model.json in this way: 
+
+### Phase 2: initial deployment of runload
+
+1. Modify the configuration in model.json in this way: 
 
   a. set the "host" property to point to the DNS name of your Apigee Edge organization   
   b. Replace CLIENT_ID_HERE with the client_id you saved earlier  
   c. Likewise replace CLIENT_SECRET_HERE with the client_secret value  
 
-14. Save the apiproxy. 
+2. Save the apiproxy. 
 
-15. Deploy the API proxy. When runload deploys, it will read this configuration, and invoke the API call described in the model.json file, to send a request for a token, using client_credentials flow. 
+3. Deploy the API proxy to the "test" environment by clicking the Deployment dropdown and selecting "test". When runload deploys, it will read this configuration, and proceed with the logic as described above - periodically invoking the API call described in the model.json file to send a request for a token using client_credentials flow. IT will then sleep, and then send out another call. 
 
-16. In the Edge UI, go to the list of API Proxies, select the oauth proxy, and then select the Trace tab.  Start tracing this proxy. After a short delay you should see inbound requests arriving from loadgen / runload.js. If you do not, seek assistance from the lesson proctor. 
+4. You should view these calls in Edge Trace.  In the Edge UI, go to the list of API Proxies, select the oauth proxy, and then select the Trace tab.  Start tracing this proxy. After a short delay you should see inbound requests arriving from loadgen / runload.js. If you do not, seek assistance from the lesson proctor. 
 
-17. 
+5. Runload is looking for patterns in the outbound request payload like {vname}, and then replacing those patterns with the values of the "context variable" with the name 'vname'.  In this case, the variables are {client_id} and {client_secret}.  At runtime, runload replaces these with the values you provided in the initialContext field.  
+
+
+### Phase 3: addition of hourly variation
+
+1. Back in the API Proxy Editor for runload-1, select the "model-1.json" file.  (**Note**: model-1.json, not model.json)  
+
+2. you will see an additional field like so: 
+
+    "invocationsPerHour" : [
+         88,  74,  80,  64,  80,  78,  80, 108,
+        100, 124,  81, 188, 120, 140, 101,  86,
+        128, 161, 192, 141, 167, 145, 146, 103
+    ],
+
+3. copy this segment, and paste it into model.json, just after "initialContext", and just before "sequences"
+
+4. Save the apiproxy.  It will be automatically re-deployed. 
+
+5. This configuration tells runload to vary the rate of calls made per hour, according to the numbers you provided. The first number provides the rate of calls for the hour between midnight and 1am.  The second for 1am-2am, and so on. In this way the number of calls varies over the course of a day.  runload also applies a Gaussian function, so that the number of calls it actually makes varies randomly around that specified number. This meakes the transaction volume more random-looking. 
+
+6. To verify that your change has worked, return to the Trace tab for the oauth proxy.  Start a trace if necessary - it may be still running. You should still see transactions flowing. It will be difficult to tell, but trust me, they're arriving at a different rate now. 
+
+
+### Phase 4: addition of variation by day of week. 
+
+1. Back in the API Proxy Editor for runload-1, select the "model-2.json" file.
+
+2. you should see a segment like this: 
+    "variationByDayOfWeek" : [
+      1.2, 1.42, 0.942, 0.82, 1.184, 1.1, 0.64
+    ],
+
+3. copy this and paste it into model.json, right after the close-square bracket following "invocationsPerHour", amd just before "sequences". 
+
+4. Save.  Redeploy is automatic. 
+
+5. Again, verify with the Trace tab. 
+
+
+### Phase 5: randomly choosing values
+
+1. Back in the API Proxy Editor for runload-1, select the "model-3.json" file.
+
+2. from model-3.json copy-paste the "initialContext" into the appropriate place in model.json, replacing the original "initialContext". Replace client_id_here and client_secret_here with the values you saved earlier.   
+
+3. from model-3.json, also copy-paste the "sequences" section, replacing the "sequences" section in model.json 
+
+4. For the values "another_client_id_here" and "another_client_secret_here" , you have two options: Leave them as is, or, create a new developer app, and place the new values there. 
+
+5. In either case, with this configuration, you are instructing runload to select the first pair of values at a rate of 20/(20+10) = 66% of the time, and the second pair of values at 10/(20+10) = 33% of the time. Obviously if you leave the second client_id as "another_client_id_here", the oauth proxy will not grant a token for such a request.  That's ok though - the point is not to have all 200 status codes. The point of driving traffic is to show a mix of transactions, some of which are failures or errors. 
+
+6. You may wonder, Why have a context at all? Why use variable replacement in these outbound requests?  Here's why: You can tell runload to modify that context with data from responses, which can then be used in subsequent calls. For example, you can extract the returned access_token, and insert it into the context, and then use that token in subsequent calls. This is what the "extracts" configuration is doing in the model.json file. 
+
+7. Open the Trace tab for the oauth proxy, and you should see some variation among the client_id and client_secret used for requesting tokens. 
+
+
+### Phase 6. Using extracted values in sunsequent requests
+
+1. Back in the API Proxy Editor for runload-1, select the "model-4.json" file.
+
+2. grab the "cities" property for "initialContext". Paste it into the appropriate place in model.json 
+
+3. also grab the updated "sequences" section in model-4.json, and paste it into model.json, replacing the previous data. 
+
+4. Examine the "sequences" value - you will see an additional sequence, which uses the extracted access_token.  This request also uses context "import" logic - it invokes a function to randomly select a city value to use in the outbound request.  Finally the outbound request is made to weather-quota. Notice the "iterations" value on that weather-quota sequence - it is a Javascript expression that resolves to a numeric. In this case a random value from 3 to 7. This simply introduces one more factor of variation in the request rate of runload. 
+
+5. Now open on the Trace tab for the "weather-quota" proxy. You should see a varying number of requests arrive, using tokens. 
+
+
+Conclusion
+-----------
+
+You now have seen how to use runload to generate "contrived" load on any API endpoint.  You've deployed an API proxy into Edge that contains a nodejs script target; and this script target runs indefinitely, invoking outbound API calls. 
+
+Some further notes: 
+
+1. The runload API proxy need not be provisioned into the same organization as the APIs it targets.  You specify the URL in the runload configuration, and obviously it can be "anything" . 
+
+2. runload need not send requests to an API hosted in Apigee Edge. It can be any HTTP target. We use it for Apigee Edge so that we can generate Analytics data. 
+
+3. There is a complete readme for the runload tool, explaining its behavior and configuration, available [here](https://github.com/DinoChiesa/se-partner-bootcamp/blob/master/loadgen/Runload-README.md).  
+
+4. You can download the runload API Proxy and re-use it anywhere, for any purpose. We recommend running it for a week or more, to generate reasonable data and Analytis charts that are worth demonstrating. 
+
+
+
