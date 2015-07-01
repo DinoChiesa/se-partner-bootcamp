@@ -167,13 +167,13 @@ Estimated Total Time for all Phases: 45 minutes
 1. Back in the API Proxy Editor for runload-1, select the "model-1.json" file.  (**Note**: model-1.json, not model.json)  
 
 2. You will see an additional field like so: 
-```
-    "invocationsPerHour" : [
-         88,  74,  80,  64,  80,  78,  80, 108,
-        100, 124,  81, 188, 120, 140, 101,  86,
-        128, 161, 192, 141, 167, 145, 146, 103
-    ],
-```
+
+      "invocationsPerHour" : [
+           88,  74,  80,  64,  80,  78,  80, 108,
+          100, 124,  81, 188, 120, 140, 101,  86,
+          128, 161, 192, 141, 167, 145, 146, 103
+      ],
+
 
 3. Copy this segment, and paste it into model.json, just after "initialContext", and just before "sequences"
 
@@ -189,11 +189,11 @@ Estimated Total Time for all Phases: 45 minutes
 1. Back in the API Proxy Editor for runload-1, select the "model-2.json" file.
 
 2. You should now see a segment like this:  
-```
-    "variationByDayOfWeek" : [
-      1.2, 1.42, 0.942, 0.82, 1.184, 1.1, 0.64
-    ],
-```
+
+      "variationByDayOfWeek" : [
+        1.2, 1.42, 0.942, 0.82, 1.184, 1.1, 0.64
+      ],
+
 
 3. copy this and paste it into model.json, right after the close-square bracket following "invocationsPerHour", amd just before "sequences". 
 
